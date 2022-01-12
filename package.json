@@ -1,0 +1,16 @@
+{
+  "name": "amit",
+  "version": "1",
+  "description": "amit practice",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "amit",
+  "license": "ISC",
+  "dependencies": {
+    "tailwindcss": "^3.0.11"
+  },
+  "repository": "https://github.com/Golderamit/code-with-golang",
+  "private": true
+}
