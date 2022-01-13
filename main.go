@@ -1,7 +1,7 @@
 package main
 
 import (
-	handler "github/practice22/handlers"
+	handler "github/practice22/handler"
 	"github/practice22/storage/postgres"
 	"log"
 	"net/http"
