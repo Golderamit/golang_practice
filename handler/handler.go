@@ -7,14 +7,12 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
 	templates *template.Template
 	store     *postgres.Storage
-	logger    *logrus.Logger
-	db         DBWithNamed
+	
 }
 
 func NewServer(st *postgres.Storage) (*mux.Router, error) {

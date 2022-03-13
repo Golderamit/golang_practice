@@ -1,55 +1,47 @@
 package handler
 
 import (
+	"fmt"
+	"github/practice22/storage"
+	"log"
 	"net/http"
-
-	"github.com/jmoiron/sqlx"
 )
 
-type UserDB struct {
+/* type UserDB struct {
 	ID        int32  `db:"id"`
 	FirstName string `db:"first_name"`
 	LastName  string `db:"last_name"`
 	Username  string `db:"username"`
 	Email     string `db:"email"`
 }
-type userviewdata struct {
-	user []UserDB
-}
-type DBWithNamed struct {
-	*sqlx.DB
-}
-
-func (s *Server) getHome(res http.ResponseWriter, req *http.Request) {
-
-	template := s.templates.Lookup("./assets/templates/home.html")
-
-	if template != nil {
-		s.logger.Error("lookup template ./assets/templates/home.html")
-		http.Error(res, "unable to load template", http.StatusInternalServerError)
+*/
+type (
+	templateData struct {
+		User storage.User
 	}
-	var users []UserDB
-	userquery := `SELECT id,
-	                     first_name, 
-	                     last_name,
-	                     username,
-	                     email
-	                     FROM users 
-	 `
-	 err :=s.db.Select(&users,userquery)
+)
+func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
+	tmp := s.templates.Lookup("home.html")
+	if tmp == nil {
+		log.Println("unable to look home.html")
+		return
+	}
 
-	 s.logger.Infoln("#########   %+v",users)
-	 if err != nil{
-		 s.logger.WithError(err).Info("db fetch users data")
-		 http.Error(res,  "Not found.", http.StatusInternalServerError)
-		 return
-	 }
-	 data:=userviewdata{
-		user:   users,
-	 }
-	 err = template.Execute(res, data)
+	user, err := s.store.GetUser(1)
+	if err != nil {
+		log.Println("unable to get user: ", err)
+		return
+	}
 
-	 if err != nil {
-		 s.logger.Info("error with template execution: %+v ",err)
-	 }
+	fmt.Printf("%+v", user)
+
+	tmpData := templateData{
+		User: *user,
+	}
+
+	err = tmp.Execute(w, tmpData)
+	if err != nil {
+		log.Println("Error executing template :", err)
+		return
+	}
 }
