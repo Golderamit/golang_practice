@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"github/practice22/storage/postgres"
+	"github/golang_practice/storage/postgres"
 	"html/template"
 	"net/http"
 
