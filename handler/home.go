@@ -7,19 +7,11 @@ import (
 	"net/http"
 )
 
-/* type UserDB struct {
-	ID        int32  `db:"id"`
-	FirstName string `db:"first_name"`
-	LastName  string `db:"last_name"`
-	Username  string `db:"username"`
-	Email     string `db:"email"`
-}
-*/
-type (
-	templateData struct {
+
+type templateData struct {
 		User storage.User
 	}
-)
+
 func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
 	tmp := s.templates.Lookup("home.html")
 	if tmp == nil {
