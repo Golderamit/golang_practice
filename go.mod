@@ -1,4 +1,4 @@
-module github/practice22
+module github/golang_practice 
 
 go 1.17
 

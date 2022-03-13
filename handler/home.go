@@ -2,7 +2,7 @@ package handler
 
 import (
 	"fmt"
-	"github/practice22/storage"
+	"github/golang_practice/storage"
 	"log"
 	"net/http"
 )

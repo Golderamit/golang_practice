@@ -1,6 +1,8 @@
 package postgres
 
-import "github/practice22/storage/postgres"
+import (
+	"github/golang_practice/storage"
+)
 
 const getUser = `
 	SELECT id, first_name, last_name, username, email from users
