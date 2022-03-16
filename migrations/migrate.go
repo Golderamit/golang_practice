@@ -82,6 +82,7 @@ func main() {
 	}
 }
 
+
 func newDBFromConfig() string {
 	dbParams := " " + "user=postgres"
 	dbParams += " " + "host=localhost"

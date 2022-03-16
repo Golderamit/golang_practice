@@ -42,7 +42,7 @@ github.com/pkg/errors
 github.com/pressly/goose
 # github.com/stretchr/testify v1.7.0
 ## explicit; go 1.13
-# golang.org/x/crypto v0.0.0-20211215153901-e495a2d5b3d3
+# golang.org/x/crypto v0.0.0-20220313003712-b769efc7c000
 ## explicit; go 1.17
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt

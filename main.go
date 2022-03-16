@@ -1,8 +1,8 @@
 package main
 
 import (
-	handler "github/practice22/handlers"
-	"github/practice22/storage/postgres"
+	handler "github/golang_practice/handler"
+	"github/golang_practice/storage/postgres"
 	"log"
 	"net/http"
 	"time"
