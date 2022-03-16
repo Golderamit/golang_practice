@@ -20,10 +20,12 @@ type Server struct {
 	session   *sessions.CookieStore
 }
 
-func NewServer(st *postgres.Storage) (*mux.Router, error) {
+func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
 
 	s := &Server{
 		store: st,
+		decoder: decoder,
+		session: session,
 	}
 
 	if err := s.parseTemplates(); err != nil {
