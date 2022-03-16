@@ -16,3 +16,14 @@ func (s *Storage) GetUser(id int32) (*storage.User, error) {
 	}
 	return &user, nil
 }
+
+const userQuery = `SELECT * FROM users WHERE email=$1`
+
+func (s *Storage) GetUserInfo(email string) *storage.User {
+	user := storage.User{}
+	err := s.db.Get(&user, userQuery, email)
+	if err != nil {
+		return &user
+	}
+	return &user
+}

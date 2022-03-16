@@ -7,4 +7,6 @@ type User struct {
   LastName  string    `db:"last_name"`
   Username  string    `db:"username"`
   Email     string    `db:"email"`
+  Password  string    `db:"password"`
+  IsAdmin   bool      `db:"is_admin"`
  }
