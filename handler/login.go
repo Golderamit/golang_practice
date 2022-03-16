@@ -61,7 +61,7 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var form Login
-	if err := s.decoder.Decode(&form, r.Form); err !=nil {
+	if err := s.decoder.Decode(&form, r.Form); err != nil {
 		s.logger.WithError(err).Error("can not decode login form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -6,16 +6,22 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/schema"
+	"github.com/gorilla/sessions"
 )
 func main (){
 
 	dbString := newDBFromConfig()
+
 	store, err := postgres.NewStorage(dbString)
 	if err != nil {
 		log.Fatal(err)
 	   }
-
-	r ,err := handler.NewServer(store)
+	   decoder := schema.NewDecoder()
+	   decoder.IgnoreUnknownKeys(true)
+	   session := sessions.NewCookieStore([]byte("1234"))
+	r ,err := handler.NewServer(store, decoder, session)
 	if err != nil{
 		log.Fatal("Handler not Found")
 	}
