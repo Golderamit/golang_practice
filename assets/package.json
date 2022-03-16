@@ -11,6 +11,6 @@
   "dependencies": {
     "tailwindcss": "^3.0.11"
   },
-  "repository": "https://github.com/Golderamit/code-with-golang",
+  "repository": "https://github.com/Golderamit/golang_practice",
   "private": true
 }

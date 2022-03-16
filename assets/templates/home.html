@@ -9,42 +9,56 @@
 
     <link rel="stylesheet" href="/static/css/app.min.css" />
     <style>
-
-.container {
+     .container {
     width: 100%;
-    padding-right: 15px;
-    padding-left: 15px;
+    
+  
     margin-right: auto;
     margin-left: auto
-}
+     }
+    body { 
+    background-image: url("/static/images/background1.jpg");
+    background-repeat: repeat;
+    background-attachment: fixed;
+    background-position: right;  
+    }
+   .background1 {
+        background: linear-gradient(224.86deg, #8b3e960a 4.87%, #81c5bc 98.81%);
+    }
+    .section{
+        min-height: 648px;
+    }
     </style>
   </head>
-  <body>
-    <div class="container">
-      <div class="">
-          <div class="">
-            <ul class="">
-              <li><a class="" href="#">Home</a></li>
-              <li><a class="" href="#">Work</a></li>
-              <li><a class="" href="#">About</a></li>
-              <li><a class="" href="#">Contact</a></li>
+  <body class="w-full">
+    <div class="container ">
+      <div class="flex flex-wrap  items-center background1">
+          <div class="w-1/3">
+            <ul class="flex flex-wrap items-center">
+              <li><a class="px-4 py-12" href="#">Home</a></li>
+              <li><a class="px-4 py-12" href="#">Work</a></li>
+              <li><a class="px-4 py-12" href="#">About</a></li>
+              <li><a class="px-4 py-12" href="#">Contact</a></li>
             </ul>
           </div>
-          <div class="">
+          <div class="w-1/3 flex justify-center">
               <a href="#" class="">
                   <img class="" src="" alt="">
               </a>
           </div>
-          <div class="">
-           <div class="">
-              <a class="" href="javascript:;">Login</a>
-              <a class="" href="javascript:;">Sign Up</a>
-           </div>
+          <div class="w-1/3 flex justify-end items-center">
+              <a class="px-4 py-12" href="javascript:;">Login</a>
+              <a class="px-4 py-12" href="javascript:;">Sign Up</a>
           </div>
       </div>
   </div>
-    <h1 class="text-blue-500 text-center">Hello</h1>
-
-
+   <div class="section container flex background1">
+   <div class=" md:w-3/4 w-full px-40 text-center pt-40">
+    <h5 class=" text-7xl mb-2  font-bold">
+      Welcome !
+  </h5>
+  </div>
+  </div>
   </body>
 </html>
+
