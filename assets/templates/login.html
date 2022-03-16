@@ -15,17 +15,17 @@
         <div>
           <label class="block" for="Email">Email</label>
           <input type="text" name="Email" class="border border-gray-500" value="{{.Form.Email}}" />
-         
-            
-         
+          {{with .FormErrors.Email}}
+            <p>{{.}}</p>
+           {{end}} 
         </div>
         
         <div>
           <label class="block" for="Password">Password</label>
           <input type="password" name="Password" class="border border-gray-500" value="{{.Form.Password}}" />
-         
-           
-           
+          {{with .FormErrors.Password}}
+            <p>{{.}}</p>
+           {{end}} 
         </div>
 
         <div>

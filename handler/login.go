@@ -9,6 +9,8 @@ import (
 
 	"github.com/gorilla/csrf"
 	"golang.org/x/crypto/bcrypt"
+	validation "github.com/go-ozzo/ozzo-validation"
+	"github.com/go-ozzo/ozzo-validation/is"
 )
 
 
@@ -22,7 +24,12 @@ type LoginTempData struct {
 	Form       Login
 	FormErrors map[string]string
 }
-
+func (l Login) Validate() error {
+	return validation.ValidateStruct(&l,
+		validation.Field(&l.Email, validation.Required, is.Email),
+		validation.Field(&l.Password, validation.Required, validation.Length(6, 12)),
+	)
+}
 func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
     
 	template := s.templates.Lookup("login.html")
@@ -61,43 +68,47 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var form Login
-	if err := s.decoder.Decode(&form, r.Form); err != nil {
+	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
 		s.logger.WithError(err).Error("can not decode login form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-
-	tempData := LoginTempData{
-		CSRFField:  csrf.TemplateField(r),
-		Form:       form,
-		FormErrors: nil,
+    if err := form.Validate(); err != nil {
+		vErrs := map[string]string{}
+		if e, ok := err.(validation.Errors); ok {
+			if len(e) > 0 {
+				for key, value := range e {
+					vErrs[key] = value.Error()
+				}
+			}
+		}
+		tempData := LoginTempData{
+			CSRFField:  csrf.TemplateField(r),
+			Form:       form,
+			FormErrors: vErrs,
+		}
+		err := template.Execute(w,tempData)
+	
+		if err != nil {
+			s.logger.Info("error with execute  template: %+v", err)
+			
+		}
+		return
 	}
-    err := template.Execute(w,tempData)
-
-	if err != nil {
-		s.logger.Info("error with execute  template: %+v", err)
-		
-	}
-	return
+	
     
 	email := form.Email
 	result := s.store.GetUserInfo(email)
 	ComparePassword(result, form, w, r)
-    isAdmin := result.IsAdmin
 	sessionUID := result.ID
+	isAdmin := result.IsAdmin
 	session, _ := s.session.Get(r, "practice_project_app")
 	session.Values["user_id"] = IntToStringConversion(sessionUID)
 	session.Values["is_admin"] = isAdmin
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("error while saving user id into session")
 	}
-
-	if isAdmin == true {
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-	} else {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-	}
+	LoginRedirect(isAdmin, w, r)
 }
 
 
@@ -109,5 +120,13 @@ func ComparePassword(result *storage.User, form Login, w http.ResponseWriter, r 
 	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(form.Password)); err != nil {
 		log.Println("Password does not match.")
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
+	}
+}
+func LoginRedirect(isAdmin bool, w http.ResponseWriter, r *http.Request) {
+	if isAdmin == true {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
 	}
 }
