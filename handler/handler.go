@@ -7,12 +7,17 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/gorilla/mux"
+	"github.com/sirupsen/logrus"
+	"github.com/gorilla/schema"
+	"github.com/gorilla/sessions"
 )
 
 type Server struct {
 	templates *template.Template
 	store     *postgres.Storage
-	
+	logger    *logrus.Logger
+	decoder   *schema.Decoder
+	session   *sessions.CookieStore
 }
 
 func NewServer(st *postgres.Storage) (*mux.Router, error) {
@@ -28,6 +33,8 @@ func NewServer(st *postgres.Storage) (*mux.Router, error) {
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
 	r.HandleFunc("/", s.getHome).Methods("GET")
+	r.HandleFunc("/login", s.getLogin).Methods("GET")
+	r.HandleFunc("/login", s.postLogin).Methods("POST")
 	return r, nil
 }
 func (s *Server) parseTemplates() error {
