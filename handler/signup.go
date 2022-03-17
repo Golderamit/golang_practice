@@ -4,23 +4,25 @@ import (
 	"context"
 	"html/template"
 	"net/http"
+
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/gorilla/csrf"
+	"golang.org/x/crypto/bcrypt"
 )
 
-type UserSignUp struct{
-  ID        int32     `db:"id"`
-  FirstName string    `db:"first_name"`
-  LastName  string    `db:"last_name"`
-  Username  string    `db:"username"`
-  Email     string    `db:"email"`
-  Password  string    `db:"password"`
-  IsAdmin   bool      `db:"is_admin"` 
+type UserSignUp struct {
+	ID        int    `db:"id"`
+	FirstName string `db:"first_name"`
+	LastName  string `db:"last_name"`
+	Username  string `db:"username"`
+	Email     string `db:"email"`
+	Password  string `db:"password"`
+	IsAdmin   bool   `db:"is_admin"`
 }
-type userFormData struct{
-	CSRFField  template.HTML   
-	Form       UserSignUp 
-	Errors map[string]error
+type userFormData struct {
+	CSRFField template.HTML
+	Form      UserSignUp
+	Errors    map[string]error
 }
 
 func (f *UserSignUp) ValidationUserFrom(ctx context.Context) error {
@@ -32,65 +34,77 @@ func (f *UserSignUp) ValidationUserFrom(ctx context.Context) error {
 		validation.Field(&f.Password, validation.Required.Error("Password is required")),
 	)
 }
-func (s *Server) usersignup(w http.ResponseWriter, r *http.Request) {
+func (f *UserSignUp) UserDB(id int) *UserSignUp {
 
-   template := s.templates.Lookup("signup.html")
-   if template == nil{
-	   s.logger.Error("lookup template login.html")
-	   http.Error(w, "unable to load template",http.StatusInternalServerError)
-       return
-   }
-  
-   data := userFormData{
-   	CSRFField: csrf.TemplateField(r),
-   }
-
-   err := template.Execute(w ,data)
-
-   if err != nil{
-	s.logger.Info("error with execute  template: %+v", err)
-   }
-   
+	return &UserSignUp{
+		ID:        id,
+		FirstName: f.FirstName,
+		LastName:  f.LastName,
+		Username:  f.Username,
+		Email:     f.Email,
+		Password:  f.Password,
+	}
 }
 
-func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
-  
+func (s *Server) usersignup(w http.ResponseWriter, r *http.Request) {
+
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
 		s.logger.Error("lookup template login.html")
-		http.Error(w,"unable to load template",http.StatusInternalServerError)
+		http.Error(w, "unable to load template", http.StatusInternalServerError)
+		return
+	}
+
+	data := userFormData{
+		CSRFField: csrf.TemplateField(r),
+	}
+
+	err := template.Execute(w, data)
+
+	if err != nil {
+		s.logger.Info("error with execute  template: %+v", err)
+	}
+
+}
+
+func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
+
+	template := s.templates.Lookup("signup.html")
+	if template == nil {
+		s.logger.Error("lookup template login.html")
+		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
 
 	if err := r.ParseForm(); err != nil {
-      s.logger.WithError(err).Error("cannot parse form")
-	  http.Error(w, err.Error(), http.StatusBadRequest)
-	  return
+		s.logger.WithError(err).Error("cannot parse form")
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	var form UserSignUp
-	if err := s.decoder.Decode(&form, r.PostForm); err != nil{
+	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
 		s.logger.WithError(err).Error("can not decode login form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-    savedVErrs := validation.Errors{}
+	savedVErrs := validation.Errors{}
 
-	if err:= form.ValidationUserFrom(r.Context()); err != nil{
-        if vErrs, ok := (err).(validation.Errors); ok {
+	if err := form.ValidationUserFrom(r.Context()); err != nil {
+		if vErrs, ok := (err).(validation.Errors); ok {
 			savedVErrs = vErrs
 		} else {
 			s.logger.WithError(err).Error("validate event form")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
-		} 
+		}
 	}
-
+    form.ID = 0 
 	if len(savedVErrs) > 0 {
 		data := userFormData{
 			CSRFField: csrf.TemplateField(r),
-			Form:         form,
-			Errors:       savedVErrs,
+			Form:      form,
+			Errors:    savedVErrs,
 		}
 
 		err := template.Execute(w, data)
@@ -100,5 +114,42 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-    http.Redirect(w, r, "/home?success=true", http.StatusSeeOther)
+	pass := form.Password
+	hashed, err := HashAndSalt(pass)
+	form.Password = hashed
+
+	const createUserQuery = `
+	INSERT INTO users(
+		first_name,
+		last_name,
+		username,
+		email,
+		password
+	)
+	VALUES(
+		:first_name,
+		:last_name,
+		:username,
+		:email,
+		:password
+	 )
+	
+	`
+	_, err = s.db.Exec(createUserQuery, form.UserDB(0))
+	if err != nil{
+      s.logger.WithError(err).Error("failed to insert users")
+	  http.Error(w, "unable to insert users", http.StatusInternalServerError)
+	  return
+	}
+
+	http.Redirect(w, r, "/?success=true", http.StatusSeeOther)
+}
+
+func HashAndSalt(password string) (string, error) {
+	hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
+	if err != nil {
+		return "", err
+	}
+	return string(hash), nil
+
 }
