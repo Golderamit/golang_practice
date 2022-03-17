@@ -31,7 +31,7 @@ const createUserQuery = `
 		:username,
 		:email,
 		:password
-	)
+	 )
 	RETURNING id
 	`
 	func (s *Storage) CreateUser(usr storage.User) (int32, error) {
@@ -49,7 +49,7 @@ const createUserQuery = `
 	const getUserEmailAndPass = `
 	SELECT * from users
 	WHERE email = $1 AND password = $2
-`
+      `
 
 func (s *Storage) GetUserEmailAndPass(email, password string) *storage.User {
 	user := storage.User{}

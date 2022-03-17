@@ -7,9 +7,10 @@ import (
 
 	"github.com/Masterminds/sprig"
 	"github.com/gorilla/mux"
-	"github.com/sirupsen/logrus"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
+	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -18,6 +19,7 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
+	db *sqlx.DB
 }
 
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
