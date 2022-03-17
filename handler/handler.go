@@ -35,8 +35,12 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	r := mux.NewRouter()
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
 	r.HandleFunc("/", s.getHome).Methods("GET")
+
 	r.HandleFunc("/login", s.getLogin).Methods("GET")
 	r.HandleFunc("/login", s.postLogin).Methods("POST")
+
+	r.HandleFunc("/signup", s.usersignup).Methods("GET")
+	r.HandleFunc("/signup", s.createUserSignUp).Methods("POST")
 	return r, nil
 }
 func (s *Server) parseTemplates() error {

@@ -37,10 +37,34 @@
         
         </div>
         <div class="md:w-1/3 w-full">
+            <div class="my-4">
+                <label class="block my-4" for="FirstName">FirstName</label>
+                <input type="text" name="FirstName" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.FirstName}}" />
+                {{with .Errors.FirstName}}
+                  <p>{{.}}</p>
+                 {{end}} 
+              </div>
+
+              <div class="my-4">
+                <label class="block my-4" for="LastName">LastName</label>
+                <input type="text" name="LastName" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.LastName}}" />
+                {{with .Errors.LastName}}
+                  <p>{{.}}</p>
+                 {{end}} 
+              </div>
+
+              <div class="my-4">
+                <label class="block my-4" for="Username">Username</label>
+                <input type="text" name="Username" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Username}}" />
+                {{with .Errors.Username}}
+                  <p>{{.}}</p>
+                 {{end}} 
+              </div>
+
           <div class="my-4">
             <label class="block my-4" for="Email">Email Address</label>
             <input type="text" name="Email" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Email}}" />
-            {{with .FormErrors.Email}}
+            {{with .Errors.Email}}
               <p>{{.}}</p>
              {{end}} 
           </div>
@@ -48,18 +72,15 @@
           <div class="my-4">
             <label class="block my-4" for="Password">Password</label>
             <input type="password" name="Password" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Password}}" />
-            {{with .FormErrors.Password}}
+            {{with .Errors.Password}}
               <p>{{.}}</p>
              {{end}} 
           </div>
   
           <div class="my-4">
-            <button class="bg-green-500 px-2 py-2 rounded hover:bg-green-200" type="submit">Login</button>
+            <button class="bg-green-500 px-2 py-2 rounded hover:bg-green-200" type="submit">Submit</button>
           </div>
-          <div class="my-4">
-            <h2 class=" text-2xl mb-2  font-bold">Don't have an account?</h2>
-            <a class="bg-green-500 px-2 py-2 hover:bg-green-200 rounded" href="/signup">Sign Up</a>
-          </div>
+          
         </div>
          </div>
       </div>

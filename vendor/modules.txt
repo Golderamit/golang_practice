@@ -14,6 +14,9 @@ github.com/asaskevich/govalidator
 ## explicit
 github.com/go-ozzo/ozzo-validation
 github.com/go-ozzo/ozzo-validation/is
+# github.com/go-ozzo/ozzo-validation/v4 v4.3.0
+## explicit; go 1.13
+github.com/go-ozzo/ozzo-validation/v4
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
