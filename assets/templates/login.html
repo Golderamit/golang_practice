@@ -28,7 +28,7 @@
      </style>
   </head>
   <body>
-    <form action="/login" class="container" method="post">
+    <form action="/login" class="container" method="POST">
       {{.CSRFField}}
       
       <div class="flex flex-col background1 section ">
@@ -41,7 +41,7 @@
             <label class="block my-4" for="Email">Email Address</label>
             <input type="text" name="Email" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Email}}" />
             {{with .FormErrors.Email}}
-              <p>{{.}}</p>
+              <p class="text-red-600  text-sm">{{.}}</p>
              {{end}} 
           </div>
           
@@ -49,7 +49,7 @@
             <label class="block my-4" for="Password">Password</label>
             <input type="password" name="Password" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Password}}" />
             {{with .FormErrors.Password}}
-              <p>{{.}}</p>
+              <p class="text-red-600  text-sm">{{.}}</p>
              {{end}} 
           </div>
   

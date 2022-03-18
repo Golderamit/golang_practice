@@ -34,7 +34,7 @@ func (f *UserSignUp) ValidationUserFrom(ctx context.Context) error {
 		validation.Field(&f.Password, validation.Required.Error("Password is required")),
 	)
 }
-func (f *UserSignUp) UserDB(id int) *UserSignUp {
+func (f *UserSignUp) UserDB(id int) *UserSignUp{
 
 	return &UserSignUp{
 		ID:        id,
@@ -50,7 +50,7 @@ func (s *Server) usersignup(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
-		s.logger.Error("lookup template login.html")
+		s.logger.Error("lookup template signup.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
@@ -71,7 +71,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
-		s.logger.Error("lookup template login.html")
+		s.logger.Error("lookup template signup.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
@@ -94,7 +94,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 		if vErrs, ok := (err).(validation.Errors); ok {
 			savedVErrs = vErrs
 		} else {
-			s.logger.WithError(err).Error("validate event form")
+			s.logger.WithError(err).Error("validate user form")
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 			return
 		}
@@ -133,7 +133,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 		:email,
 		:password
 	 )
-	
+	 RETURNING id
 	`
 	_, err = s.db.Exec(createUserQuery, form.UserDB(0))
 	if err != nil{

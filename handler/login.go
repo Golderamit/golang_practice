@@ -108,7 +108,7 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("error while saving user id into session")
 	}
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	http.Redirect(w, r, "/home?success=true", http.StatusSeeOther)
 }
 
 
@@ -122,11 +122,11 @@ func ComparePassword(result *storage.User, form Login, w http.ResponseWriter, r 
 		http.Redirect(w, r, "/login", http.StatusSeeOther)
 	}
 }
-/* func LoginRedirect(isAdmin bool, w http.ResponseWriter, r *http.Request) {
+ func LoginRedirect(isAdmin bool, w http.ResponseWriter, r *http.Request) {
 	if isAdmin == true {
 		http.Redirect(w, r, "/home", http.StatusSeeOther)
 	} else {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 	}
-} */
+} 
