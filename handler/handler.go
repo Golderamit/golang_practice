@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/Masterminds/sprig"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
@@ -19,7 +20,7 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
-	db *sqlx.DB
+	db        *sqlx.DB
 }
 
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
@@ -35,6 +36,9 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	}
 
 	r := mux.NewRouter()
+
+    csrf.Protect([]byte("go-secret-go-safe-----"), csrf.Secure(false))(r)
+
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
@@ -43,6 +47,8 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 
 	r.HandleFunc("/signup", s.usersignup).Methods("GET")
 	r.HandleFunc("/signup", s.createUserSignUp).Methods("POST")
+	
+	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
 }
 func (s *Server) parseTemplates() error {
@@ -64,4 +70,19 @@ func (s *Server) parseTemplates() error {
 	}
 	s.templates = tmpl
 	return nil
+}
+func SessionCheckAndRedirect(s *Server, r *http.Request, next http.Handler, w http.ResponseWriter, user bool) {
+	uid, user_type := GetSetSessionValue(s, r)
+	if uid != "" && user_type == user {
+		next.ServeHTTP(w, r)
+	} else {
+		http.Redirect(w, r, "/forbidden", http.StatusSeeOther)
+	}
+}
+
+func GetSetSessionValue(s *Server, r *http.Request) (interface{}, interface{}) {
+	session, _ := s.session.Get(r, "practice_project_app")
+	uid := session.Values["user_id"]
+	user_type := session.Values["is_admin"]
+	return uid, user_type
 }
