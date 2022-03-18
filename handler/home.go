@@ -1,16 +1,12 @@
 package handler
 
 import (
-	"fmt"
-	"github/golang_practice/storage"
 	"log"
 	"net/http"
 )
-
-
-type templateData struct {
-		User storage.User
-	}
+type HomePage struct{
+	UserLoggedIn bool
+}
 
 func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
 	tmp := s.templates.Lookup("home.html")
@@ -18,22 +14,28 @@ func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
 		log.Println("unable to look home.html")
 		return
 	}
+    session, _ := s.session.Get(r, "practice_project_app")
+	userID := session.Values["user_id"]
 
-	user, err := s.store.GetUser(1)
-	if err != nil {
-		log.Println("unable to get user: ", err)
+	if _, ok := userID.(string); ok {
+		data := HomePage{
+			UserLoggedIn: true,
+		}
+		if err := tmp.Execute(w, data); err != nil {
+			log.Fatalln("Session Execution error")
+		}
 		return
 	}
-
-	fmt.Printf("%+v", user)
-
-	tmpData := templateData{
-		User: *user,
+	
+	tmpData := HomePage{
+		UserLoggedIn: false,
 	}
-
-	err = tmp.Execute(w, tmpData)
+	err := tmp.Execute(w, tmpData)
 	if err != nil {
 		log.Println("Error executing template :", err)
 		return
 	}
 }
+    
+	
+	

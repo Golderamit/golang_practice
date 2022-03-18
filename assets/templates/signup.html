@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Login</title>
+    <title>Signup</title>
 
     <link rel="stylesheet" href="/static/css/app.min.css" />
     <style>
@@ -28,7 +28,7 @@
      </style>
   </head>
   <body>
-    <form action="/signup" class="container" method="post">
+    <form action="/signup/" class="container" method="POST">
       {{.CSRFField}}
       
       <div class="flex flex-col background1 section ">
@@ -40,40 +40,40 @@
             <div class="my-4">
                 <label class="block my-4" for="FirstName">FirstName</label>
                 <input type="text" name="FirstName" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.FirstName}}" />
-                {{with .Errors.FirstName}}
-                  <p>{{.}}</p>
+                {{with .FormErrors.FirstName}}
+                  <p class="text-red-600  text-sm">{{.}}</p>
                  {{end}} 
               </div>
 
               <div class="my-4">
                 <label class="block my-4" for="LastName">LastName</label>
                 <input type="text" name="LastName" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.LastName}}" />
-                {{with .Errors.LastName}}
-                  <p>{{.}}</p>
+                {{with .FormErrors.LastName}}
+                  <p class="text-red-600  text-sm">{{.}}</p>
                  {{end}} 
               </div>
 
               <div class="my-4">
                 <label class="block my-4" for="Username">Username</label>
                 <input type="text" name="Username" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Username}}" />
-                {{with .Errors.Username}}
-                  <p>{{.}}</p>
+                {{with .FormErrors.Username}}
+                  <p class="text-red-600  text-sm">{{.}}</p>
                  {{end}} 
               </div>
 
           <div class="my-4">
             <label class="block my-4" for="Email">Email Address</label>
             <input type="text" name="Email" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Email}}" />
-            {{with .Errors.Email}}
-              <p>{{.}}</p>
+            {{with .FormErrors.Email}}
+              <p class="text-red-600  text-sm">{{.}}</p>
              {{end}} 
           </div>
           
           <div class="my-4">
             <label class="block my-4" for="Password">Password</label>
             <input type="password" name="Password" class="py-2 w-full  bg-opacity-10 bg-green-200 border border-gray-500" value="{{.Form.Password}}" />
-            {{with .Errors.Password}}
-              <p>{{.}}</p>
+            {{with .FormErrors.Password}}
+              <p class="text-red-600 text-sm">{{.}}</p>
              {{end}} 
           </div>
   

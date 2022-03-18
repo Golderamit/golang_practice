@@ -11,20 +11,24 @@ import (
 	"github.com/gorilla/sessions"
 )
 func main (){
+    
+	session := sessions.NewCookieStore([]byte("my_secret"))
 
-	dbString := newDBFromConfig()
+	newDbString := newDBFromConfig()
 
-	store, err := postgres.NewStorage(dbString)
+	store, err := postgres.NewStorage(newDbString)
 	if err != nil {
-		log.Fatal(err)
-	   }
-	   decoder := schema.NewDecoder()
-	   decoder.IgnoreUnknownKeys(true)
-	   session := sessions.NewCookieStore([]byte("1234"))
-	r ,err := handler.NewServer(store, decoder, session)
-	if err != nil{
-		log.Fatal("Handler not Found")
+		log.Println("error db")
 	}
+
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	   
+	r, err := handler.NewServer(store, decoder, session)
+	if err != nil {
+		log.Println("error on handelr")
+	}
+
 
 	srv := &http.Server{
 		Handler:      r,
@@ -34,7 +38,6 @@ func main (){
 	   }
 	log.Fatal(srv.ListenAndServe())
 }
-
 	func newDBFromConfig() string{
 		dbParams := " " + "user=postgres"
 		dbParams += " " + "host=localhost"

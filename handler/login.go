@@ -1,16 +1,16 @@
 package handler
 
 import (
+	"fmt"
 	"github/golang_practice/storage"
 	"html/template"
 	"log"
 	"net/http"
 	"strconv"
 
-	"github.com/gorilla/csrf"
-	"golang.org/x/crypto/bcrypt"
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
+	"github.com/gorilla/csrf"
 )
 
 
@@ -21,13 +21,13 @@ type Login struct {
 
 type LoginTempData struct {
 	CSRFField  template.HTML
-	Form       Login
+	Form      storage.User
 	FormErrors map[string]string
 }
 func (l Login) Validate() error {
 	return validation.ValidateStruct(&l,
-		validation.Field(&l.Email, validation.Required, is.Email),
-		validation.Field(&l.Password, validation.Required, validation.Length(6, 12)),
+		validation.Field(&l.Email, validation.Required.Error("email is required"), is.Email),
+		validation.Field(&l.Password, validation.Required.Error("Password is required"), validation.Length(6, 12).Error("Password Lenght must be 3 to 10")),
 	)
 }
 func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
@@ -38,18 +38,24 @@ func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
-    
+    session, _ := s.session.Get(r, "practice_project_app")
+	userId:=session.Values["user_id"] 
+
+	if _,ok:=userId.(string);ok{
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	}
+
 	tempData := LoginTempData{
 		CSRFField:  csrf.TemplateField(r),
 		
 	}
-    err := template.Execute(w,tempData)
+    err := template.Execute(w, tempData)
 
 	if err != nil {
 		s.logger.Info("error with execute  template: %+v", err)
 		
 	}
-	return
+	
 	
 }
 func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +65,7 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("lookup template login.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
-     }
+     } 
 
 	if err := r.ParseForm(); err !=nil {
 		s.logger.WithError(err).Error("cannot parse form")
@@ -67,13 +73,13 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var form Login
+	var form storage.User
 	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
 		s.logger.WithError(err).Error("can not decode login form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-    if err := form.Validate(); err != nil {
+    if err := form.ValidateUser(); err != nil {
 		vErrs := map[string]string{}
 		if e, ok := err.(validation.Errors); ok {
 			if len(e) > 0 {
@@ -95,38 +101,23 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	
+	log.Println(form)
+	log.Println("###########=hi=============")
+	log.Println(form)
     
-	email := form.Email
-	result := s.store.GetUserInfo(email)
-	ComparePassword(result, form, w, r)
-	sessionUID := result.ID
-	isAdmin := result.IsAdmin
+	user, err := s.store.GetUser(form.Email, form.Password)
+
+	if err != nil {
+		log.Fatalln("user not found")
+		return
+	}
+    fmt.Printf("##########  %+v", user)
+
 	session, _ := s.session.Get(r, "practice_project_app")
-	session.Values["user_id"] = IntToStringConversion(sessionUID)
-	session.Values["is_admin"] = isAdmin
+	session.Values["user_id"] = strconv.Itoa(int(user.ID))
+	session.Values["user_email"] = user.Email
 	if err := session.Save(r, w); err != nil {
-		log.Fatalln("error while saving user id into session")
+		log.Fatalln("saving error session")
 	}
-	http.Redirect(w, r, "/home", http.StatusSeeOther)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
-
-
-func IntToStringConversion(id int32) string {
-	t := strconv.Itoa(int(id))
-	return t
-}
-func ComparePassword(result *storage.User, form Login, w http.ResponseWriter, r *http.Request) {
-	if err := bcrypt.CompareHashAndPassword([]byte(result.Password), []byte(form.Password)); err != nil {
-		log.Println("Password does not match.")
-		http.Redirect(w, r, "/login", http.StatusSeeOther)
-	}
-}
-/* func LoginRedirect(isAdmin bool, w http.ResponseWriter, r *http.Request) {
-	if isAdmin == true {
-		http.Redirect(w, r, "/home", http.StatusSeeOther)
-	} else {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-
-	}
-} */

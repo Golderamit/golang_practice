@@ -3,13 +3,14 @@ package handler
 import (
 	"github/golang_practice/storage/postgres"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/Masterminds/sprig"
+	"github.com/gorilla/csrf"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
-	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -19,12 +20,12 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
-	db *sqlx.DB
 }
 
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
 
 	s := &Server{
+		templates: &template.Template{},
 		store: st,
 		decoder: decoder,
 		session: session,
@@ -35,14 +36,20 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	}
 
 	r := mux.NewRouter()
+    r.Use(csrf.Protect([]byte("1234")))
+
+
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
+	
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
-	r.HandleFunc("/login", s.getLogin).Methods("GET")
-	r.HandleFunc("/login", s.postLogin).Methods("POST")
+	r.HandleFunc("/login/", s.getLogin).Methods("GET")
+	r.HandleFunc("/login/", s.postLogin).Methods("POST")
 
-	r.HandleFunc("/signup", s.usersignup).Methods("GET")
-	r.HandleFunc("/signup", s.createUserSignUp).Methods("POST")
+	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
+	r.HandleFunc("/signup/", s.postSignup).Methods("POST")
+	
+	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
 }
 func (s *Server) parseTemplates() error {
@@ -65,3 +72,14 @@ func (s *Server) parseTemplates() error {
 	s.templates = tmpl
 	return nil
 }
+
+
+ func (s *Server) DefaultTemplate(w http.ResponseWriter, r *http.Request, temp_name string, data interface{}) {
+	temp := s.templates.Lookup(temp_name)
+
+	if err := temp.Execute(w, data); err != nil {
+		log.Fatalln("executing template: ", err)
+		return
+	}
+
+} 

@@ -28,14 +28,12 @@
     }
     </style>
   </head>
-  <body>
-    <div class="w-full">
-     
+  <body class="w-full">
     <div class="container ">
       <div class="flex flex-wrap  items-center background1">
           <div class="w-1/3">
             <ul class="flex flex-wrap items-center">
-              <li><a class="px-4 py-12" href="/">Home</a></li>
+              <li><a class="px-4 py-12" href="/admin-home">Home</a></li>
               <li><a class="px-4 py-12" href="#">Work</a></li>
               <li><a class="px-4 py-12" href="#">About</a></li>
               <li><a class="px-4 py-12" href="#">Contact</a></li>
@@ -47,18 +45,53 @@
               </a>
           </div>
           <div class="w-1/3 flex justify-end items-center">
-              <a class="px-4 py-12" href="/login/">Login</a>
-              <a class="px-4 py-12" href="/signup/">Sign Up</a>
+              <a class="px-4 py-12" href="/signup">Sign Up</a>
+              
           </div>
       </div>
   </div>
-  
    <div class="section container flex background1">
    <div class=" md:w-3/4 w-full px-40 text-center pt-40">
-    <h5>Welcome to.....</h5>
+    <div class=" text-7xl mb-2  font-bold">
+      
+      <div class="md:w-1/2 md:pr-4 pb-8">
+        <div class="bg-white p-8 shadow-xl z-10 relative rounded h-full flex flex-col">
+          <a href="#">
+            <h5 class="text-xl mb-3 font-bold text-indigo-700 hover:underline"></h5>
+          </a>
+          <div class="mb-4 flex-1">
+          </div>
+          <div class="text-right">
+            <a href="#" class=" text-white font-bold py-2 px-4 rounded"></a>
+          </div>
+        </div>
+      </div>
+     
+    </div>
   </div>
-  </div>
-  
+  <div class="section container flex background1">
+    <div class=" md:w-3/4 w-full px-40 text-center pt-40">
+     <h5 >User List Table</h5>
+     <table class="w-full text-left border border-grey-light-10">
+       <thead class="bg-grey-light-10 uppercase text-sm font-semibold">
+     <tr>
+             <th>User ID</th>
+             <th> FirstName</th>
+             <th> LastName</th>
+             <th> Username</th>
+             <th> Email</th>
+             <th> IsAdmin</th>
+       </tr>
+       </thead>
+       
+         <tr>
+         
+            
+         </tr>
+      
+     </table>
+   </div>
+   </div>
   </div>
   </body>
 </html>
