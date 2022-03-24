@@ -3,6 +3,7 @@ package handler
 import (
 	"net/http"
 )
+
 type AdminHomeDB struct {
 	ID               int32     `db:"id"`
 	Title            string     `db:"title"`
@@ -32,4 +33,9 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	var home []AdminHomeDB
 
 	const query :=
+
+
+func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
+	
+
 }
