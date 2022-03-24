@@ -50,7 +50,7 @@ func (s *Server) usersignup(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
-		s.logger.Error("lookup template login.html")
+		s.logger.Error("lookup template signup.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
@@ -71,7 +71,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
-		s.logger.Error("lookup template login.html")
+		s.logger.Error("lookup template signup.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
