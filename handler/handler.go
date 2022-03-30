@@ -26,6 +26,7 @@ type Server struct {
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
 
 	s := &Server{
+		templates: &template.Template{},
 		store: st,
 		decoder: decoder,
 		session: session,
@@ -36,6 +37,10 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	}
 
 	r := mux.NewRouter()
+
+    r.Use(csrf.Protect([]byte("1234")))
+
+
 
     csrf.Protect([]byte("go-secret-go-safe-----"), csrf.Secure(false))(r)
 
@@ -72,6 +77,19 @@ func (s *Server) parseTemplates() error {
 	s.templates = tmpl
 	return nil
 }
+
+
+
+/* func (s *Server) DefaultTemplate(w http.ResponseWriter, r *http.Request, temp_name string, data interface{}) {
+	temp := s.templates.Lookup(temp_name)
+
+	if err := temp.Execute(w, data); err != nil {
+		log.Fatalln("executing template: ", err)
+		return
+	}
+
+} */
+
 func SessionCheckAndRedirect(s *Server, r *http.Request, next http.Handler, w http.ResponseWriter, user bool) {
 	uid, user_type := GetSetSessionValue(s, r)
 	if uid != "" && user_type == user {
@@ -87,3 +105,4 @@ func GetSetSessionValue(s *Server, r *http.Request) (interface{}, interface{}) {
 	user_type := session.Values["is_admin"]
 	return uid, user_type
 }
+

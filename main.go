@@ -25,6 +25,8 @@ func main (){
 	   decoder.IgnoreUnknownKeys(true)
 
 
+
+
 	   session := sessions.NewCookieStore([]byte("1234"))
 
 	   

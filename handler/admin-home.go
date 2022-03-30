@@ -1,4 +1,5 @@
 
+
  package handler
 
 import (
@@ -11,6 +12,7 @@ type adminHomeData struct{
      AdminHome   []storage.AdminHomeDB
 	 Alladmincount int32
 }
+
 
 package handler
 
@@ -35,6 +37,7 @@ type AdminHomeDB struct {
 	FromDate         time.Time `db:"from_date"`
 	ToDate           time.Time `db:"to_date"`	
 }
+
 
 
 func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
@@ -63,6 +66,7 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
  
 
 
+
 	var home []AdminHomeDB
 
 	const query :=
@@ -72,4 +76,5 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	
 
 }
+
 

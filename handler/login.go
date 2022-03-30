@@ -66,7 +66,7 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		s.logger.Error("lookup template login.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
-     }
+     } 
 
 	if err := r.ParseForm(); err !=nil {
 		s.logger.WithError(err).Error("cannot parse form")
@@ -109,6 +109,9 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 
 	user, err := s.store.GetUser(form.Email, form.Password)
 
+
+	user, err := s.store.GetUser(form.Email, form.Password)
+
 	email := form.Email
 	result := s.store.GetUserInfo(email)
 	ComparePassword(result, form, w, r)
@@ -124,10 +127,15 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 
+
 	if err != nil {
 		log.Fatalln("user not found")
 		return
 	}
+
+    fmt.Printf("##########  %+v", user)
+
+
 
     fmt.Printf("##########  %+v", user)
 
@@ -139,12 +147,17 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 
 
+
 	session, _ := s.session.Get(r, "practice_project_app")
 	session.Values["user_id"] = strconv.Itoa(int(user.ID))
 	session.Values["user_email"] = user.Email
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("saving error session")
 	}
+
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
+
 
 	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
 }
