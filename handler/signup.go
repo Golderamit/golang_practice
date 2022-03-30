@@ -7,6 +7,7 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/gorilla/csrf"
+	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -24,7 +25,9 @@ type userFormData struct {
 	Form      UserSignUp
 	Errors    map[string]error
 }
-
+type Storage struct {
+	db *sqlx.DB
+}
 func (f *UserSignUp) ValidationUserFrom(ctx context.Context) error {
 	return validation.ValidateStructWithContext(ctx, f,
 		validation.Field(&f.FirstName, validation.Required.Error("FirstName is required")),
@@ -140,7 +143,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
       s.logger.WithError(err).Error("failed to insert users")
 	  http.Error(w, "unable to insert users", http.StatusInternalServerError)
 	  return
-	}
+	} 
 
 	http.Redirect(w, r, "/?success=true", http.StatusSeeOther)
 }

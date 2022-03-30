@@ -1,3 +1,17 @@
+
+ package handler
+
+import (
+	"fmt"
+	"github/golang_practice/storage"
+	"net/http"
+)
+
+type adminHomeData struct{
+     AdminHome   []storage.AdminHomeDB
+	 Alladmincount int32
+}
+
 package handler
 
 import (
@@ -22,6 +36,7 @@ type AdminHomeDB struct {
 	ToDate           time.Time `db:"to_date"`	
 }
 
+
 func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	temp := s.templates.Lookup("admin-home.html")
 	if temp == nil{
@@ -29,6 +44,24 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 		http.Error(w,"unable to load template", http.StatusInternalServerError)
 		return
 	}
+	adminuser, err := s.store.GetAdmin(1)
+	
+	fmt.Printf("%+v", adminuser)
+
+
+	data := adminHomeData{
+		AdminHome:     adminuser,
+
+	}
+	err = temp.Execute(w, data)
+
+	fmt.Printf("%+v", err)
+	if err !=nil{
+		s.logger.Info("error with template execution: %+v", err)
+	}
+}
+ 
+
 
 	var home []AdminHomeDB
 
@@ -39,3 +72,4 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	
 
 }
+

@@ -14,9 +14,6 @@ github.com/asaskevich/govalidator
 ## explicit
 github.com/go-ozzo/ozzo-validation
 github.com/go-ozzo/ozzo-validation/is
-# github.com/go-ozzo/ozzo-validation/v4 v4.3.0
-## explicit; go 1.13
-github.com/go-ozzo/ozzo-validation/v4
 # github.com/google/uuid v1.3.0
 ## explicit
 github.com/google/uuid
@@ -69,8 +66,6 @@ github.com/sirupsen/logrus
 ## explicit; go 1.13
 # golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 ## explicit; go 1.17
-golang.org/x/crypto/bcrypt
-golang.org/x/crypto/blowfish
 golang.org/x/crypto/pbkdf2
 golang.org/x/crypto/scrypt
 # golang.org/x/sys v0.0.0-20210615035016-665e8c7367d1

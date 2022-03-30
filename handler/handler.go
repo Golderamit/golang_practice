@@ -40,6 +40,7 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
     csrf.Protect([]byte("go-secret-go-safe-----"), csrf.Secure(false))(r)
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
+	
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
 	r.HandleFunc("/login", s.getLogin).Methods("GET")
