@@ -23,6 +23,12 @@ func main (){
 
 	   decoder := schema.NewDecoder()
 	   decoder.IgnoreUnknownKeys(true)
+
+
+
+
+	   session := sessions.NewCookieStore([]byte("1234"))
+
 	   
 	r ,err := handler.NewServer(store, decoder, session)
 	if err != nil{
