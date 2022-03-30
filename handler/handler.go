@@ -20,6 +20,9 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
+
+
+
 }
 
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
@@ -36,7 +39,15 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	}
 
 	r := mux.NewRouter()
+
     r.Use(csrf.Protect([]byte("1234")))
+
+
+
+
+
+
+    csrf.Protect([]byte("go-secret-go-safe-----"), csrf.Secure(false))(r)
 
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
@@ -46,8 +57,10 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	r.HandleFunc("/login/", s.getLogin).Methods("GET")
 	r.HandleFunc("/login/", s.postLogin).Methods("POST")
 
+
 	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
 	r.HandleFunc("/signup/", s.postSignup).Methods("POST")
+
 	
 	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
@@ -75,6 +88,7 @@ func (s *Server) parseTemplates() error {
 
 
  func (s *Server) DefaultTemplate(w http.ResponseWriter, r *http.Request, temp_name string, data interface{}) {
+
 	temp := s.templates.Lookup(temp_name)
 
 	if err := temp.Execute(w, data); err != nil {
@@ -83,3 +97,23 @@ func (s *Server) parseTemplates() error {
 	}
 
 } 
+
+} 
+
+func SessionCheckAndRedirect(s *Server, r *http.Request, next http.Handler, w http.ResponseWriter, user bool) {
+	uid, user_type := GetSetSessionValue(s, r)
+	if uid != "" && user_type == user {
+		next.ServeHTTP(w, r)
+	} else {
+		http.Redirect(w, r, "/forbidden", http.StatusSeeOther)
+	}
+}
+
+func GetSetSessionValue(s *Server, r *http.Request) (interface{}, interface{}) {
+	session, _ := s.session.Get(r, "practice_project_app")
+	uid := session.Values["user_id"]
+	user_type := session.Values["is_admin"]
+	return uid, user_type
+}
+
+
