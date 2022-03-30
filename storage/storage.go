@@ -38,6 +38,15 @@ type AdminHomeDB struct {
 	ToDate           time.Time `db:"to_date"`
 }
 
+
+func (ulg User) ValidateUser() error {
+	return validation.ValidateStruct(&ulg,
+		validation.Field(&ulg.Email,
+			validation.Required.Error("email is required"),
+			is.Email,
+		),
+		validation.Field(&ulg.Password,
+
 func (ug User) ValidateUser() error {
 	return validation.ValidateStruct(&ug,
 		validation.Field(&ug.Email,
@@ -45,8 +54,35 @@ func (ug User) ValidateUser() error {
 			is.Email,
 		),
 		validation.Field(&ug.Password,
+
+			validation.Required.Error("Password is required"),
+			validation.Length(3, 10).Error("Password Lenght must be 3 to 10"),
+		),
+	)
+
+func (sg User) Validate() error {
+	return validation.ValidateStruct(&sg,
+		validation.Field(&sg.FirstName,
+			validation.Required.Error("FirstName is required"),
+			validation.Length(5, 100).Error("FirstName length must be 5 to 100"),
+		),
+		validation.Field(&sg.LastName,
+			validation.Required.Error("LastName is required"),
+			validation.Length(5, 100).Error("LastName length must be 5 to 100"),
+		),
+		validation.Field(&sg.Username,
+			validation.Required.Error("username is required"),
+			validation.Length(3, 20).Error("usrname length must be 3 to 20"),
+		),
+		validation.Field(&sg.Email,
+			validation.Required.Error("email is required"),
+			is.Email,
+		),
+		validation.Field(&sg.Password,
 			validation.Required.Error("Password is required"),
 			validation.Length(3, 10).Error("Password Lenght must be 3 to 10"),
 		),
 	)
 }
+
+

@@ -3,6 +3,7 @@ package handler
 import (
 	"github/golang_practice/storage/postgres"
 	"html/template"
+	"log"
 	"net/http"
 
 	"github.com/Masterminds/sprig"
@@ -10,7 +11,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
-	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,7 +20,9 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
-	db        *sqlx.DB
+
+
+
 }
 
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
@@ -42,17 +44,23 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 
 
 
+
+
+
     csrf.Protect([]byte("go-secret-go-safe-----"), csrf.Secure(false))(r)
+
 
 	r.PathPrefix("/static/").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("./assets/"))))
 	
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
-	r.HandleFunc("/login", s.getLogin).Methods("GET")
-	r.HandleFunc("/login", s.postLogin).Methods("POST")
+	r.HandleFunc("/login/", s.getLogin).Methods("GET")
+	r.HandleFunc("/login/", s.postLogin).Methods("POST")
 
-	r.HandleFunc("/signup", s.usersignup).Methods("GET")
-	r.HandleFunc("/signup", s.createUserSignUp).Methods("POST")
+
+	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
+	r.HandleFunc("/signup/", s.postSignup).Methods("POST")
+
 	
 	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
@@ -79,8 +87,8 @@ func (s *Server) parseTemplates() error {
 }
 
 
+ func (s *Server) DefaultTemplate(w http.ResponseWriter, r *http.Request, temp_name string, data interface{}) {
 
-/* func (s *Server) DefaultTemplate(w http.ResponseWriter, r *http.Request, temp_name string, data interface{}) {
 	temp := s.templates.Lookup(temp_name)
 
 	if err := temp.Execute(w, data); err != nil {
@@ -88,7 +96,9 @@ func (s *Server) parseTemplates() error {
 		return
 	}
 
-} */
+} 
+
+} 
 
 func SessionCheckAndRedirect(s *Server, r *http.Request, next http.Handler, w http.ResponseWriter, user bool) {
 	uid, user_type := GetSetSessionValue(s, r)
@@ -105,4 +115,5 @@ func GetSetSessionValue(s *Server, r *http.Request) (interface{}, interface{}) {
 	user_type := session.Values["is_admin"]
 	return uid, user_type
 }
+
 

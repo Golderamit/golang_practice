@@ -27,8 +27,11 @@
      }
      </style>
   </head>
-  <body>
+
+    <form action="/login/" class="container" method="POST">
+
     <form action="/login" class="container" method="POST">
+
       {{.CSRFField}}
       
       <div class="flex flex-col background1 section ">
@@ -58,7 +61,7 @@
           </div>
           <div class="my-4">
             <h2 class=" text-2xl mb-2  font-bold">Don't have an account?</h2>
-            <a class="bg-green-500 px-2 py-2 hover:bg-green-200 rounded" href="/signup">Sign Up</a>
+            <a class="bg-green-500 px-2 py-2 hover:bg-green-200 rounded" href="/signup/">Sign Up</a>
           </div>
         </div>
          </div>

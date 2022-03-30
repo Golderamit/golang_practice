@@ -12,14 +12,25 @@ import (
 )
 func main (){
     
-	session := sessions.NewCookieStore([]byte("1234"))
 
-	dbString := newDBFromConfig()
+	session := sessions.NewCookieStore([]byte("my_secret"))
 
-	store, err := postgres.NewStorage(dbString)
+
+	newDbString := newDBFromConfig()
+
+	store, err := postgres.NewStorage(newDbString)
 	if err != nil {
-		log.Fatal(err)
-	   }
+
+		log.Println("error db")
+	}
+
+	decoder := schema.NewDecoder()
+	decoder.IgnoreUnknownKeys(true)
+	   
+	r, err := handler.NewServer(store, decoder, session)
+	if err != nil {
+		log.Println("error on handelr")
+
 
 	   decoder := schema.NewDecoder()
 	   decoder.IgnoreUnknownKeys(true)
@@ -33,7 +44,9 @@ func main (){
 	r ,err := handler.NewServer(store, decoder, session)
 	if err != nil{
 		log.Fatal("Handler not Found")
+
 	}
+
 
 	srv := &http.Server{
 		Handler:      r,

@@ -1,30 +1,27 @@
 package handler
 
 import (
-	"context"
+	"github/golang_practice/storage"
 	"html/template"
+	"log"
 	"net/http"
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/gorilla/csrf"
+
 	"github.com/jmoiron/sqlx"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type UserSignUp struct {
-	ID        int    `db:"id"`
-	FirstName string `db:"first_name"`
-	LastName  string `db:"last_name"`
-	Username  string `db:"username"`
-	Email     string `db:"email"`
-	Password  string `db:"password"`
-	IsAdmin   bool   `db:"is_admin"`
+type SignUpFormData struct {
+	CSRFField  template.HTML
+	Form       storage.User
+	FormErrors map[string]string
 }
-type userFormData struct {
-	CSRFField template.HTML
-	Form      UserSignUp
-	Errors    map[string]error
-}
+
+
+func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
+
 type Storage struct {
 	db *sqlx.DB
 }
@@ -49,28 +46,33 @@ func (f *UserSignUp) UserDB(id int) *UserSignUp{
 	}
 }
 
-func (s *Server) usersignup(w http.ResponseWriter, r *http.Request) {
+
+	session, _ := s.session.Get(r, "practice_project_app")
+	userId := session.Values["user_id"]
+
+
+	if _, ok := userId.(string); ok {
+		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
 		s.logger.Error("lookup template signup.html")
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
+
 	}
 
-	data := userFormData{
+	data := SignUpFormData{
 		CSRFField: csrf.TemplateField(r),
 	}
 
-	err := template.Execute(w, data)
-
-	if err != nil {
-		s.logger.Info("error with execute  template: %+v", err)
-	}
+	s.SignupTemplate(w, r, data)
 
 }
 
-func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
+
+func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
+
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
@@ -78,6 +80,7 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
+
 
 	if err := r.ParseForm(); err != nil {
 		s.logger.WithError(err).Error("cannot parse form")
@@ -85,12 +88,23 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var form UserSignUp
+	var form storage.User
 	if err := s.decoder.Decode(&form, r.PostForm); err != nil {
 		s.logger.WithError(err).Error("can not decode login form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	if err := form.Validate(); err != nil {
+		vErros := map[string]string{}
+
+		if e, ok := err.(validation.Errors); ok {
+			if len(e) > 0 {
+				for key, value := range e {
+					vErros[key] = value.Error()
+				}
+			}
+
 	savedVErrs := validation.Errors{}
 
 	if err := form.ValidationUserFrom(r.Context()); err != nil {
@@ -108,15 +122,28 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 			CSRFField: csrf.TemplateField(r),
 			Form:      form,
 			Errors:    savedVErrs,
-		}
 
-		err := template.Execute(w, data)
-
-		if err != nil {
-			s.logger.Info("error with template execution: %+v", err)
 		}
+		data := SignUpFormData{
+			CSRFField:  csrf.TemplateField(r),
+			Form:       form,
+			FormErrors: vErros,
+		}
+        s.SignupTemplate(w, r, data)
 		return
 	}
+
+	id, err := s.store.SaveUser(form)
+	if err != nil {
+		log.Println("data not saved")
+	}
+    log.Println(id)
+
+	log.Printf("\n %#v", form)
+
+	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
+	
+
 	pass := form.Password
 	hashed, err := HashAndSalt(pass)
 	form.Password = hashed
@@ -145,14 +172,14 @@ func (s *Server) createUserSignUp(w http.ResponseWriter, r *http.Request) {
 	  return
 	} 
 
-	http.Redirect(w, r, "/?success=true", http.StatusSeeOther)
+
 }
 
-func HashAndSalt(password string) (string, error) {
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), 8)
-	if err != nil {
-		return "", err
-	}
-	return string(hash), nil
+func (s *Server) SignupTemplate(w http.ResponseWriter, r *http.Request, form SignUpFormData) {
+	temp := s.templates.Lookup("signup.html")
 
+	if err := temp.Execute(w, form); err != nil {
+		log.Fatalln("executing template: ", err)
+		return
+	}
 }
