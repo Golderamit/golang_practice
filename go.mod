@@ -32,5 +32,5 @@ require (
 	github.com/mitchellh/reflectwalk v1.0.2 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.7.0 // indirect
-	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd // indirect
+	golang.org/x/crypto v0.0.0-20220315160706-3147a52a75dd
 )

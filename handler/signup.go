@@ -9,6 +9,9 @@ import (
 
 	validation "github.com/go-ozzo/ozzo-validation/v4"
 	"github.com/gorilla/csrf"
+
+	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type SignUpFormData struct {
@@ -16,6 +19,7 @@ type SignUpFormData struct {
 	Form       storage.User
 	FormErrors map[string]string
 }
+
 
 func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 	template := s.templates.Lookup("signup.html")
@@ -25,13 +29,54 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+
 	fmt.Printf("****************  %+v", template)
 	 /*  session, _ := s.session.Get(r, "practice_project_app")
+
+type Storage struct {
+	db *sqlx.DB
+}
+func (f *UserSignUp) ValidationUserFrom(ctx context.Context) error {
+	return validation.ValidateStructWithContext(ctx, f,
+		validation.Field(&f.FirstName, validation.Required.Error("FirstName is required")),
+		validation.Field(&f.LastName, validation.Required.Error("LastName is required")),
+		validation.Field(&f.Username, validation.Required.Error("Username is required")),
+		validation.Field(&f.Email, validation.Required.Error("Email is required")),
+		validation.Field(&f.Password, validation.Required.Error("Password is required")),
+	)
+}
+func (f *UserSignUp) UserDB(id int) *UserSignUp{
+
+	return &UserSignUp{
+		ID:        id,
+		FirstName: f.FirstName,
+		LastName:  f.LastName,
+		Username:  f.Username,
+		Email:     f.Email,
+		Password:  f.Password,
+	}
+}
+
+
+	session, _ := s.session.Get(r, "practice_project_app")
+
 	userId := session.Values["user_id"]
+
 
 	if _, ok := userId.(string); ok {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+
 	}   */
+
+
+	template := s.templates.Lookup("signup.html")
+	if template == nil {
+		s.logger.Error("lookup template signup.html")
+		http.Error(w, "unable to load template", http.StatusInternalServerError)
+		return
+
+	}
+
 
 	data := SignUpFormData{
 		CSRFField: csrf.TemplateField(r),
@@ -46,7 +91,12 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+
 func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
+
+
+
+
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
@@ -54,6 +104,7 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
+
 
 	if err := r.ParseForm(); err != nil {
 		s.logger.WithError(err).Error("cannot parse form")
@@ -67,6 +118,7 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	if err := form.Validate(); err != nil {
 		vErros := map[string]string{}
 
@@ -76,6 +128,25 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 					vErros[key] = value.Error()
 				}
 			}
+
+	savedVErrs := validation.Errors{}
+
+	if err := form.ValidationUserFrom(r.Context()); err != nil {
+		if vErrs, ok := (err).(validation.Errors); ok {
+			savedVErrs = vErrs
+		} else {
+			s.logger.WithError(err).Error("validate user form")
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+	}
+    form.ID = 0 
+	if len(savedVErrs) > 0 {
+		data := userFormData{
+			CSRFField: csrf.TemplateField(r),
+			Form:      form,
+			Errors:    savedVErrs,
+
 		}
 		data := SignUpFormData{
 			CSRFField:  csrf.TemplateField(r),
@@ -99,5 +170,41 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 	log.Printf("\n %#v", form)
 
 	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
+
+
+	pass := form.Password
+	hashed, err := HashAndSalt(pass)
+	form.Password = hashed
+
+	const createUserQuery = `
+	INSERT INTO users(
+		first_name,
+		last_name,
+		username,
+		email,
+		password
+	)
+	VALUES(
+		:first_name,
+		:last_name,
+		:username,
+		:email,
+		:password
+	 )
+	 RETURNING id
+	`
+	_, err = s.db.Exec(createUserQuery, form.UserDB(0))
+	if err != nil{
+      s.logger.WithError(err).Error("failed to insert users")
+	  http.Error(w, "unable to insert users", http.StatusInternalServerError)
+	  return
+	} 
+
+
+}
+
+func (s *Server) SignupTemplate(w http.ResponseWriter, r *http.Request, form SignUpFormData) {
+	temp := s.templates.Lookup("signup.html")
+
 
 }
