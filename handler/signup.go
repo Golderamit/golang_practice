@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/gorilla/csrf"
 )
 
@@ -24,8 +24,8 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
-
-	fmt.Printf("****************  %+v", template)
+    fmt.Printf("$$$$$$$$$$$$    %+v",template)
+	
 	 /*  session, _ := s.session.Get(r, "practice_project_app")
 	userId := session.Values["user_id"]
 
@@ -38,7 +38,7 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err := template.Execute(w, data)
-	fmt.Printf("****************  %+v", data)
+	
 
 	if err != nil {
 		s.logger.Info("error with execute  template: %+v", err)
@@ -46,7 +46,7 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
+ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("signup.html")
 	if template == nil {
@@ -54,7 +54,7 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
-
+    fmt.Printf("$$$$$$$$$$$$    %+v",template)
 	if err := r.ParseForm(); err != nil {
 		s.logger.WithError(err).Error("cannot parse form")
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -67,6 +67,7 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+	fmt.Printf("$$$$$$$$$$$$    %+v",form)
 	if err := form.Validate(); err != nil {
 		vErros := map[string]string{}
 
@@ -83,6 +84,8 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 			FormErrors: vErros,
 		}
 		err := template.Execute(w, data)
+
+        fmt.Printf("$$$$$$$$$$$$    %+v",data)		
 		if err != nil {
 			s.logger.Info("error with execute  template: %+v", err)
 		}
@@ -93,11 +96,11 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("data not saved")
 	}
-	fmt.Printf("****************  %+v",form)
+	fmt.Printf("$$$$$$$$$$$$    %+v",id)
 	log.Println(id)
 
 	log.Printf("\n %#v", form)
 
 	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
 
-}
+} 

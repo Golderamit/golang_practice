@@ -25,7 +25,6 @@ type Server struct {
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
 
 	s := &Server{
-		templates: &template.Template{},
 		store: st,
 		decoder: decoder,
 		session: session,
@@ -47,7 +46,7 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	r.HandleFunc("/login/", s.postLogin).Methods("POST")
 
 	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
-	r.HandleFunc("/signup/", s.postSignup).Methods("POST")
+	 r.HandleFunc("/signup/", s.postSignup).Methods("POST") 
 	
 	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
