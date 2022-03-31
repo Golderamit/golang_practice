@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github/golang_practice/storage"
 	"html/template"
 	"log"
@@ -17,23 +18,42 @@ type SignUpFormData struct {
 }
 
 func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
+	template := s.templates.Lookup("signup.html")
+	if template == nil {
+		s.logger.Error("lookup template signup.html")
+		http.Error(w, "unable to load template", http.StatusInternalServerError)
+		return
+	}
 
-	session, _ := s.session.Get(r, "practice_project_app")
+	fmt.Printf("****************  %+v", template)
+	 /*  session, _ := s.session.Get(r, "practice_project_app")
 	userId := session.Values["user_id"]
 
 	if _, ok := userId.(string); ok {
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	}
+	}   */
 
 	data := SignUpFormData{
 		CSRFField: csrf.TemplateField(r),
 	}
 
-	s.SignupTemplate(w, r, data)
+	err := template.Execute(w, data)
+	fmt.Printf("****************  %+v", data)
 
+	if err != nil {
+		s.logger.Info("error with execute  template: %+v", err)
+
+	}
 }
 
 func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
+
+	template := s.templates.Lookup("signup.html")
+	if template == nil {
+		s.logger.Error("lookup template signup.html")
+		http.Error(w, "unable to load template", http.StatusInternalServerError)
+		return
+	}
 
 	if err := r.ParseForm(); err != nil {
 		s.logger.WithError(err).Error("cannot parse form")
@@ -62,27 +82,22 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 			Form:       form,
 			FormErrors: vErros,
 		}
-        s.SignupTemplate(w, r, data)
+		err := template.Execute(w, data)
+		if err != nil {
+			s.logger.Info("error with execute  template: %+v", err)
+		}
 		return
 	}
+
 	id, err := s.store.SaveUser(form)
 	if err != nil {
 		log.Println("data not saved")
 	}
-    log.Println(id)
+	fmt.Printf("****************  %+v",form)
+	log.Println(id)
 
 	log.Printf("\n %#v", form)
 
 	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
-	
 
-}
-
-func (s *Server) SignupTemplate(w http.ResponseWriter, r *http.Request, form SignUpFormData) {
-	temp := s.templates.Lookup("signup.html")
-
-	if err := temp.Execute(w, form); err != nil {
-		log.Fatalln("executing template: ", err)
-		return
-	}
 }

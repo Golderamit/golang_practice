@@ -6,7 +6,6 @@ import (
 	"html/template"
 	"log"
 	"net/http"
-	"strconv"
 
 	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/go-ozzo/ozzo-validation/is"
@@ -38,18 +37,22 @@ func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
-    session, _ := s.session.Get(r, "practice_project_app")
+	fmt.Printf("****************  %+v",template)
+
+   /*  session, _ := s.session.Get(r, "practice_project_app")
 	userId:=session.Values["user_id"] 
 
 	if _,ok:=userId.(string);ok{
 		http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
-	}
+	} */
 
 	tempData := LoginTempData{
 		CSRFField:  csrf.TemplateField(r),
 		
 	}
     err := template.Execute(w, tempData)
+
+   fmt.Printf("****************  %+v",tempData)
 
 	if err != nil {
 		s.logger.Info("error with execute  template: %+v", err)
@@ -101,9 +104,7 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	log.Println(form)
-	log.Println("###########=hi=============")
-	log.Println(form)
+	
     
 	user, err := s.store.GetUser(form.Email, form.Password)
 
@@ -113,11 +114,11 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 	}
     fmt.Printf("##########  %+v", user)
 
-	session, _ := s.session.Get(r, "practice_project_app")
+	/* session, _ := s.session.Get(r, "practice_project_app")
 	session.Values["user_id"] = strconv.Itoa(int(user.ID))
 	session.Values["user_email"] = user.Email
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("saving error session")
-	}
-	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+	} */
+	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
 }
