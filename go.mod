@@ -4,7 +4,6 @@ go 1.17
 
 require (
 	github.com/Masterminds/sprig v2.22.0+incompatible
-	github.com/go-ozzo/ozzo-validation/v4 v4.3.0
 	github.com/gorilla/mux v1.8.0
 	github.com/jmoiron/sqlx v1.3.4
 	github.com/lib/pq v1.10.4

@@ -26,11 +26,32 @@
     .section{
         min-height: 648px;
     }
+    .footer{
+      min-height: 168px;
+    }
+    .row{
+      text-align: center;
+      display: flex;
+     flex-wrap: wrap;
+     margin-right: -15px;
+     margin-left: -15px;
+    
+    }
+    .col{
+      position: relative;
+      width: 100%;
+      min-height: 1px;
+      padding-right: 15px;
+      padding-left: 15px;
+      flex: 0 0 33.333333%;
+     max-width: 33.333333%;
+    }
     </style>
   </head>
   <body>
+    <div>
     <div class="w-full">
-     
+      {{if .UserLoggedIn}}
     <div class="container ">
       <div class="flex flex-wrap  items-center background1">
           <div class="w-1/3">
@@ -46,10 +67,8 @@
                   <img class="" src="" alt="">
               </a>
           </div>
-          <div class="w-1/3 flex justify-end items-center">
-              <a class="px-4 py-12" href="/login/">Login</a>
-              <a class="px-4 py-12" href="/signup/">Sign Up</a>
-          </div>
+          <div class="h-32 flex items-center"><p class="pl-4 text-blue-800">{{if ne .Form.Email ""}}{{.Form.Email}}{{end}}</p></div>
+          
       </div>
   </div>
   
@@ -59,6 +78,21 @@
   </div>
   </div>
   
+   </div>
+   {{else}}
+   <div class="flex justify-end items-center space-x-8">
+    <div class="w-1/3 flex justify-end items-center">
+      <a class="px-4 py-12" href="/login/">Login</a>
+      <a class="px-4 py-12" href="/signup/">Sign Up</a>
   </div>
+   </div>
+  {{end}}
+  </div>
+  <div class="container mx-auto  footer background1">
+    <div class=" container mx-auto">
+      {{template "footer.html" .}}
+    </div>
+  </div>
+   </div>
   </body>
 </html>

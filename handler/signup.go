@@ -101,6 +101,6 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 
 	log.Printf("\n %#v", form)
 
-	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/?Success=True", http.StatusTemporaryRedirect)
 
 } 
