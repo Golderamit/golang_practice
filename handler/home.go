@@ -1,11 +1,15 @@
 package handler
 
 import (
+	"database/sql"
+	"fmt"
+	"github/golang_practice/storage"
 	"log"
 	"net/http"
 )
 type HomePage struct{
 	UserLoggedIn bool
+	Form      storage.User
 }
 
 func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
@@ -26,10 +30,26 @@ func (s *Server) getHome(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
+	var form storage.User
+
+	userInfoSelect := `SELECT 
+	id,
+	email
+	FROM users WHERE email=$1`
+
+   if  err := s.db.Get(&form, userInfoSelect, form.Email); err == sql.ErrNoRows {
+	} else if err != nil {
+		s.logger.WithError(err).Error("db select users")
+		http.Error(w, "failed to get users", http.StatusInternalServerError)
+		return
 	
+}
 	tmpData := HomePage{
 		UserLoggedIn: false,
+		Form: form,
 	}
+
+	fmt.Printf("$$$$$$$$$$$$    %+v",form)
 	err := tmp.Execute(w, tmpData)
 	if err != nil {
 		log.Println("Error executing template :", err)

@@ -11,6 +11,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
+	"github.com/jmoiron/sqlx"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,6 +22,7 @@ type Server struct {
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
 
+	db        *sqlx.DB
 
 
 }
@@ -28,7 +30,6 @@ type Server struct {
 func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
 
 	s := &Server{
-		templates: &template.Template{},
 		store: st,
 		decoder: decoder,
 		session: session,
@@ -60,6 +61,7 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 
 	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
 	r.HandleFunc("/signup/", s.postSignup).Methods("POST")
+
 
 	
 	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")

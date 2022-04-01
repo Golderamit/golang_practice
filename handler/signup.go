@@ -7,7 +7,7 @@ import (
 	"log"
 	"net/http"
 
-	validation "github.com/go-ozzo/ozzo-validation/v4"
+	validation "github.com/go-ozzo/ozzo-validation"
 	"github.com/gorilla/csrf"
 
 	"github.com/jmoiron/sqlx"
@@ -30,7 +30,9 @@ func (s *Server) getSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 
+
 	fmt.Printf("****************  %+v", template)
+
 	 /*  session, _ := s.session.Get(r, "practice_project_app")
 
 type Storage struct {
@@ -83,7 +85,7 @@ func (f *UserSignUp) UserDB(id int) *UserSignUp{
 	}
 
 	err := template.Execute(w, data)
-	fmt.Printf("****************  %+v", data)
+	
 
 	if err != nil {
 		s.logger.Info("error with execute  template: %+v", err)
@@ -92,7 +94,9 @@ func (f *UserSignUp) UserDB(id int) *UserSignUp{
 }
 
 
+
 func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
+
 
 
 
@@ -104,6 +108,8 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "unable to load template", http.StatusInternalServerError)
 		return
 	}
+
+    fmt.Printf("$$$$$$$$$$$$    %+v",template)
 
 
 	if err := r.ParseForm(); err != nil {
@@ -154,6 +160,8 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 			FormErrors: vErros,
 		}
 		err := template.Execute(w, data)
+
+        fmt.Printf("$$$$$$$$$$$$    %+v",data)		
 		if err != nil {
 			s.logger.Info("error with execute  template: %+v", err)
 		}
@@ -164,12 +172,15 @@ func (s *Server) postSignup(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Println("data not saved")
 	}
-	fmt.Printf("****************  %+v",form)
+	fmt.Printf("$$$$$$$$$$$$    %+v",id)
 	log.Println(id)
 
 	log.Printf("\n %#v", form)
 
-	http.Redirect(w, r, "/login/?Success=True", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/?Success=True", http.StatusTemporaryRedirect)
+
+
+} 
 
 
 	pass := form.Password
@@ -208,3 +219,4 @@ func (s *Server) SignupTemplate(w http.ResponseWriter, r *http.Request, form Sig
 
 
 }
+
