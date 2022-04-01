@@ -3,8 +3,12 @@ package postgres
 import (
 	"fmt"
 	"github/golang_practice/storage"
+
 	"log"
 )
+
+ )
+
 
  const getUserQuery = `
 	SELECT * from users
@@ -19,6 +23,7 @@ import (
 	return &user, nil
  }
  const createUserQuery = `
+
 	INSERT INTO users 
 	(first_name, last_name, username, email, password) 
 	VALUES (:first_name, :last_name, :username, :email, :password) 
@@ -31,6 +36,34 @@ func (s *Storage) SaveUser(user storage.User) (int32, error) {
 	if err != nil {
 		log.Println(err)
 		return 0, err
+
+	INSERT INTO users(
+		first_name,
+		last_name,
+		username,
+		email,
+		password
+	)
+	VALUES(
+		:first_name,
+		:last_name,
+		:username,
+		:email,
+		:password
+	 )
+	RETURNING id
+	`
+	func (s *Storage) CreateUser(usr storage.User) (int32, error) {
+		stmt, err := s.db.PrepareNamed(createUserQuery)
+		if err != nil {
+			return 0, err
+		}
+		var id int32
+		if err := stmt.Get(&id, usr); err != nil {
+			return 0, err
+		}
+		return id, nil
+
 	}
 	var id int32
 	if err := stmt.Get(&id, user); err != nil {
