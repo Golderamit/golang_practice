@@ -26,9 +26,55 @@
          min-height: 648px;
      }
      </style>
+     <style>
+      .container {
+     width: 100%;
+     margin-right: auto;
+     margin-left: auto
+      }
+     body { 
+     background-image: url("/static/images/background1.jpg");
+     background-repeat: repeat;
+     background-attachment: fixed;
+     background-position: right;  
+     }
+    .background1 {
+         background: linear-gradient(224.86deg, #8b3e960a 4.87%, #81c5bc 98.81%);
+     }
+     .section{
+         min-height: 648px;
+     }
+     .footer{
+       min-height: 168px;
+     }
+     .row{
+       text-align: center;
+       display: flex;
+      flex-wrap: wrap;
+      margin-right: -15px;
+      margin-left: -15px;
+     
+     }
+     .col{
+       position: relative;
+       width: 100%;
+       min-height: 1px;
+       padding-right: 15px;
+       padding-left: 15px;
+       flex: 0 0 33.333333%;
+      max-width: 33.333333%;
+     }
+     .display{
+       
+       display: inline;
+     }
+     </style>
   </head>
   <body>
-    <form action="/login/" class="container" method="POST">
+    <div class="w-full">
+    {{template "header.html" .}}
+  </div>
+    <form action="/login" class="container" method="POST">
       {{.CSRFField}}
       
       <div class="flex flex-col background1 section ">
@@ -58,11 +104,16 @@
           </div>
           <div class="my-4">
             <h2 class=" text-2xl mb-2  font-bold">Don't have an account?</h2>
-            <a class="bg-green-500 px-2 py-2 hover:bg-green-200 rounded" href="/signup/">Sign Up</a>
+            <a class="bg-green-500 px-2 py-2 hover:bg-green-200 rounded" href="/signup">Sign Up</a>
           </div>
         </div>
          </div>
       </div>
     </form>
+    <div class="container mx-auto  footer background1">
+      <div class=" container mx-auto">
+        {{template "footer.html" .}}
+      </div>
+    </div>
   </body>
 </html>

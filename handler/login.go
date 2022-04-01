@@ -120,5 +120,5 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("saving error session")
 	} */
-	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }

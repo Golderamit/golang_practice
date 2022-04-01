@@ -21,15 +21,16 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
-	db        *sqlx.DB
+	db         *sqlx.DB
 }
 
-func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
+func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore, db *sqlx.DB) (*mux.Router, error) {
 
 	s := &Server{
 		store: st,
 		decoder: decoder,
 		session: session,
+		db:     db,
 	}
 
 	if err := s.parseTemplates(); err != nil {
@@ -44,11 +45,11 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
-	r.HandleFunc("/login/", s.getLogin).Methods("GET")
-	r.HandleFunc("/login/", s.postLogin).Methods("POST")
-
-	r.HandleFunc("/signup/", s.getSignup).Methods("GET")
-	 r.HandleFunc("/signup/", s.postSignup).Methods("POST") 
+	r.HandleFunc("/login", s.getLogin).Methods("GET")
+	r.HandleFunc("/login", s.postLogin).Methods("POST")
+	r.HandleFunc("/logout", s.logOut)
+	r.HandleFunc("/signup", s.getSignup).Methods("GET")
+	 r.HandleFunc("/signup", s.postSignup).Methods("POST") 
 	
 	r.HandleFunc("/admin-home", s.adminHomePage).Methods("GET")
 	return r, nil
