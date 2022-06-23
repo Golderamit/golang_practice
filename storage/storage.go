@@ -38,6 +38,7 @@ type AdminHomeDB struct {
 	ToDate           time.Time `db:"to_date"`
 }
 
+
 func (ulg User) ValidateUser() error {
 	return validation.ValidateStruct(&ulg,
 		validation.Field(&ulg.Email,
@@ -45,11 +46,20 @@ func (ulg User) ValidateUser() error {
 			is.Email,
 		),
 		validation.Field(&ulg.Password,
+
+func (ug User) ValidateUser() error {
+	return validation.ValidateStruct(&ug,
+		validation.Field(&ug.Email,
+			validation.Required.Error("email is required"),
+			is.Email,
+		),
+		validation.Field(&ug.Password,
+
 			validation.Required.Error("Password is required"),
 			validation.Length(3, 10).Error("Password Lenght must be 3 to 10"),
 		),
 	)
-}
+
 func (sg User) Validate() error {
 	return validation.ValidateStruct(&sg,
 		validation.Field(&sg.FirstName,
@@ -74,3 +84,5 @@ func (sg User) Validate() error {
 		),
 	)
 }
+
+
