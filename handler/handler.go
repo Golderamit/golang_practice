@@ -21,18 +21,16 @@ type Server struct {
 	logger    *logrus.Logger
 	decoder   *schema.Decoder
 	session   *sessions.CookieStore
-
-	db        *sqlx.DB
-
-
+	db         *sqlx.DB
 }
 
-func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore) (*mux.Router, error) {
+func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.CookieStore, db *sqlx.DB) (*mux.Router, error) {
 
 	s := &Server{
 		store: st,
 		decoder: decoder,
 		session: session,
+		db:     db,
 	}
 
 	if err := s.parseTemplates(); err != nil {

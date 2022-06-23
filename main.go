@@ -9,6 +9,7 @@ import (
 
 	"github.com/gorilla/schema"
 	"github.com/gorilla/sessions"
+	"github.com/jmoiron/sqlx"
 )
 func main (){
     
@@ -26,8 +27,15 @@ func main (){
 
 	decoder := schema.NewDecoder()
 	decoder.IgnoreUnknownKeys(true)
+
+	
+	db, err := sqlx.Connect("postgres", newDbString)
+	if err != nil {
+		return 
+	}
+
 	   
-	r, err := handler.NewServer(store, decoder, session)
+	r, err := handler.NewServer(store, decoder, session, db)
 	if err != nil {
 		log.Println("error on handelr")
 
