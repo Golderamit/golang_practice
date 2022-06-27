@@ -1,4 +1,8 @@
+
 package handler
+
+
+ package handler
 
 import (
 	"fmt"
@@ -11,6 +15,7 @@ type adminHomeData struct{
      AdminHome   []storage.AdminHomeDB
 	 Alladmincount int32
 }
+
 
 type Users struct {
 	ID        int32     `db:"id"`
@@ -26,6 +31,37 @@ type Users struct {
 type userviewData struct{
 	Form []Users
 }
+
+
+
+package handler
+
+import (
+	"net/http"
+)
+
+type AdminHomeDB struct {
+	ID               int32     `db:"id"`
+	Title            string     `db:"title"`
+	Venue            string    `db:"venue"`
+	Address          string    `db:"address"`
+	Country          string     `db:"country"`
+	Email            string    `db:"email"`
+	PhoneNumber      string    `db:"phone_number"`
+	ShortDescription string    `db:"short_description"`
+	Description      string     `db:"description"`
+	Image            string     `db:"image"`
+	Status           bool      `db:"status"`
+	CreatedAt        time.Time `db:"created_at"`
+	UpdatedAt        time.Time `db:"updated_at"`
+	FromDate         time.Time `db:"from_date"`
+	ToDate           time.Time `db:"to_date"`	
+}
+
+
+
+
+
 func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	temp := s.templates.Lookup("admin-home.html")
 	if temp == nil{
@@ -62,3 +98,18 @@ func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
 	}
 }
  
+
+
+
+	var home []AdminHomeDB
+
+	const query :=
+
+
+func (s *Server) adminHomePage(w http.ResponseWriter, r *http.Request) {
+	
+
+}
+
+
+

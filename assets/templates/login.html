@@ -70,11 +70,18 @@
      }
      </style>
   </head>
+
   <body>
     <div class="w-full">
     {{template "header.html" .}}
   </div>
+
     <form action="/login" class="container" method="POST">
+
+    <form action="/login/" class="container" method="POST">
+
+    <form action="/login" class="container" method="POST">
+
       {{.CSRFField}}
       
       <div class="flex flex-col background1 section ">

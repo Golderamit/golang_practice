@@ -61,6 +61,7 @@ func (s *Server) getLogin(w http.ResponseWriter, r *http.Request) {
 	
 	
 }
+
 func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 
 	template := s.templates.Lookup("login.html")
@@ -104,21 +105,77 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		}
 		return
 	}
-	
+
+	log.Println(form)
+
+	log.Println("###########=hi=============")
+	log.Println(form)
+
     
 	user, err := s.store.GetUser(form.Email, form.Password)
+
+
+    
+
+	user, err := s.store.GetUser(form.Email, form.Password)
+
+
+	user, err := s.store.GetUser(form.Email, form.Password)
+
+	email := form.Email
+	result := s.store.GetUserInfo(email)
+	ComparePassword(result, form, w, r)
+	sessionUID := result.ID
+	isAdmin := result.IsAdmin
+	session, _ := s.session.Get(r, "practice_project_app")
+	session.Values["user_id"] = IntToStringConversion(sessionUID)
+	session.Values["is_admin"] = isAdmin
+	if err := session.Save(r, w); err != nil {
+		log.Fatalln("error while saving user id into session")
+	}
+	http.Redirect(w, r, "/home?success=true", http.StatusSeeOther)
+}
+
 
 	if err != nil {
 		log.Fatalln("user not found")
 		return
 	}
+
+
     fmt.Printf("##########  %+v", user)
 
+
 	/* session, _ := s.session.Get(r, "practice_project_app")
+
+
+}
+ func LoginRedirect(isAdmin bool, w http.ResponseWriter, r *http.Request) {
+	if isAdmin == true {
+		http.Redirect(w, r, "/home", http.StatusSeeOther)
+	} else {
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+
+	session, _ := s.session.Get(r, "practice_project_app")
+
 	session.Values["user_id"] = strconv.Itoa(int(user.ID))
 	session.Values["user_email"] = user.Email
 	if err := session.Save(r, w); err != nil {
 		log.Fatalln("saving error session")
+
 	} */
+
 	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
 }
+
+	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
+}
+
+	}
+
+
+	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
+}
+
+} 
+
