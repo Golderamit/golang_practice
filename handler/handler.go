@@ -53,6 +53,13 @@ func NewServer(st *postgres.Storage, decoder *schema.Decoder, session *sessions.
 	
 	r.HandleFunc("/", s.getHome).Methods("GET")
 
+
+	r.HandleFunc("/login", s.getLogin).Methods("GET")
+	r.HandleFunc("/login", s.postLogin).Methods("POST")
+	r.HandleFunc("/logout", s.logOut)
+	r.HandleFunc("/signup", s.getSignup).Methods("GET")
+	 r.HandleFunc("/signup", s.postSignup).Methods("POST") 
+
 	r.HandleFunc("/login/", s.getLogin).Methods("GET")
 	r.HandleFunc("/login/", s.postLogin).Methods("POST")
 

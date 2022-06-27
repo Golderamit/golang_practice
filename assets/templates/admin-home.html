@@ -51,24 +51,7 @@
       </div>
   </div>
    <div class="section container flex background1">
-   <div class=" md:w-3/4 w-full px-40 text-center pt-40">
-    <div class=" text-7xl mb-2  font-bold">
-      
-      <div class="md:w-1/2 md:pr-4 pb-8">
-        <div class="bg-white p-8 shadow-xl z-10 relative rounded h-full flex flex-col">
-          <a href="#">
-            <h5 class="text-xl mb-3 font-bold text-indigo-700 hover:underline"></h5>
-          </a>
-          <div class="mb-4 flex-1">
-          </div>
-          <div class="text-right">
-            <a href="#" class=" text-white font-bold py-2 px-4 rounded"></a>
-          </div>
-        </div>
-      </div>
-     
-    </div>
-  </div>
+   
   <div class="section container flex background1">
     <div class=" md:w-3/4 w-full px-40 text-center pt-40">
      <h5 >User List Table</h5>
@@ -83,11 +66,30 @@
              <th> IsAdmin</th>
        </tr>
        </thead>
-       
-         <tr>
-         
-            
-         </tr>
+       <tbody>
+        {{range .Form}}
+        <tr class="border-b border-grey-light-10">                
+            <td class="py-4 pl-4 pr-4">
+                {{.ID}}
+            </td>
+            <td class="py-4 pl-4 pr-4">
+                {{.FirstName}}
+            </td>
+            <td class="py-4 pl-4 pr-4">
+                {{.LastName}}
+            </td>
+            <td class="py-4 pl-4 pr-4">
+                {{.Username}}
+            </td>
+            <td class="py-4 pl-4 pr-4">
+              {{.Email}}
+          </td>
+          <td class="py-4 pl-4 pr-4">
+            {{.IsAdmin}}
+        </td>
+        </tr>
+        {{end}}
+    </tbody>
       
      </table>
    </div>

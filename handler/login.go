@@ -164,6 +164,10 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 		log.Fatalln("saving error session")
 
 	} */
+
+	http.Redirect(w, r, "/", http.StatusTemporaryRedirect)
+}
+
 	http.Redirect(w, r, "/?success=true", http.StatusTemporaryRedirect)
 }
 
@@ -174,6 +178,4 @@ func (s *Server) postLogin(w http.ResponseWriter, r *http.Request) {
 }
 
 } 
-
-
 
